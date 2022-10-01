@@ -52,6 +52,8 @@
 import { galleryItems } from "./gallery-items.js";
 
 const gallery = document.querySelector(".gallery");
+let pirctureSource;
+let instance;
 
 const markupCreatorFunc = function (galleryItems) {
   return galleryItems
@@ -73,31 +75,29 @@ const markupCreatorFunc = function (galleryItems) {
 const galleryMarkup = markupCreatorFunc(galleryItems);
 
 gallery.insertAdjacentHTML("beforeend", galleryMarkup);
+gallery.addEventListener("click", onPictureClick);
 
-const onPictureClick = function (event) {
+function onPictureClick(event) {
   if (event.target.nodeName !== "IMG") {
     return;
   }
 
   event.preventDefault();
 
-  const pirctureSource = event.target.dataset.source;
+  pirctureSource = event.target.dataset.source;
 
-  const instance = basicLightbox.create(`<img
+  instance = basicLightbox.create(`<img
       src="${pirctureSource}"
     />`);
-
   instance.show();
 
-  window.addEventListener(
-    "keydown",
-    (event) => {
-      if (event.code === "Escape") {
-        instance.close();
-      }
-    },
-    { once: true }
-  );
-};
+  window.addEventListener("keydown", onEscBtn);
+}
 
-gallery.addEventListener("click", onPictureClick);
+function onEscBtn(event) {
+  const KEY_TO_CLOSE = "Escape";
+  if (event.code === KEY_TO_CLOSE) {
+    instance.close();
+    window.removeEventListener("keydown", onEscBtn);
+  }
+}
